@@ -1,6 +1,8 @@
 # About Project
 This is just a fun web app which generates random builds by rolls/slots. It was just a quick, fun side project for me inspired by others using their own roll utilities. With theirs not being open source, I decided to make and share my own.
 
+Hosted on Cloudflare - Use for free at: https://osrs-gear-randomizer.pages.dev/
+
 In developing this, I found the OSRSBox API has been offline for quite some time, likely abandoned. As such, the items list is outdated by a few years, so I've created utilities to cross-compare off their items list to get all missing items into new finalized lists (see Utils section).
 
 Built in:
@@ -9,6 +11,7 @@ Built in:
 [![HTML](https://img.shields.io/badge/HTML-%23E34F26.svg?logo=html5&logoColor=white)](#)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000)](#)
 	[![CSS](https://img.shields.io/badge/CSS-639?logo=css&logoColor=fff)](#)
+	[![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white)](#)
 
 
 Feel free to reference the full OSRS items list directly here:
