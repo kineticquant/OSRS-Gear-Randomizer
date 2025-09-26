@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSRS Gear Randomizer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>OSRS Gear Randomizer</h1>
+        <div class="controls">
+            <label for="roll-limit">Total Rolls Allowed:</label>
+            <input type="number" id="roll-limit" value="100" min="1">
+        </div>
+        <p class="total-rolls">
+            Total Rolls: <span id="total-rolls-counter">0</span> / <span id="total-rolls-limit">100</span>
+        </p>
+
+        <div class="main-content">
+            <div class="hover-info-panel">
+                <div id="item-tooltip" class="tooltip"></div>
+            </div>
+
+            <div class="equipment-grid">
+                <div class="slot-placeholder"></div>
+                <div class="slot" id="head" data-slot="head">
+                    <span class="roll-counter" id="head-counter">0</span>
+                    <img src="img/Head_slot.png" alt="Head Slot">
+                </div>
+                <div class="slot-placeholder"></div>
+
+                <div class="slot" id="cape" data-slot="cape">
+                    <span class="roll-counter" id="cape-counter">0</span>
+                    <img src="img/Cape_slot.png" alt="Cape Slot">
+                </div>
+                <div class="slot" id="neck" data-slot="neck">
+                    <span class="roll-counter" id="neck-counter">0</span>
+                    <img src="img/Neck_slot.png" alt="Amulet Slot">
+                </div>
+                <div class="slot" id="ammo" data-slot="ammo">
+                    <span class="roll-counter" id="ammo-counter">0</span>
+                    <img src="img/Ammo_slot.png" alt="Ammo Slot">
+                </div>
+
+                <div class="slot" id="weapon" data-slot="weapon">
+                    <span class="roll-counter" id="weapon-counter">0</span>
+                    <img src="img/Weapon_slot.png" alt="Weapon Slot">
+                </div>
+                <div class="slot" id="body" data-slot="body">
+                    <span class="roll-counter" id="body-counter">0</span>
+                    <img src="img/Body_slot.png" alt="Body Slot">
+                </div>
+                <div class="slot" id="shield" data-slot="shield">
+                    <span class="roll-counter" id="shield-counter">0</span>
+                    <img src="img/Shield_slot.png" alt="Shield Slot">
+                </div>
+                
+                <div class="slot-placeholder"></div>
+                <div class="slot" id="legs" data-slot="legs">
+                    <span class="roll-counter" id="legs-counter">0</span>
+                    <img src="img/Legs_slot.png" alt="Legs Slot">
+                </div>
+                <div class="slot-placeholder"></div>
+
+                <div class="slot" id="hands" data-slot="hands">
+                    <span class="roll-counter" id="hands-counter">0</span>
+                    <img src="img/Hands_slot.png" alt="Hands Slot">
+                </div>
+                <div class="slot" id="feet" data-slot="feet">
+                    <span class="roll-counter" id="feet-counter">0</span>
+                    <img src="img/Feet_slot.png" alt="Feet Slot">
+                </div>
+                <div class="slot" id="ring" data-slot="ring">
+                    <span class="roll-counter" id="ring-counter">0</span>
+                    <img src="img/Ring_slot.png" alt="Ring Slot">
+                </div>
+            </div>
+
+            <div class="item-display">
+                <h3>Roll Result</h3>
+                <h2 id="item-name">Select a slot to roll an item</h2>
+                <div id="loading-message" class="hidden">Loading item database...</div>
+                <div class="stats-grid">
+                    <div class="stat-category">Attack Bonus</div>
+                    <div class="stat">Stab: <span id="astab">0</span></div>
+                    <div class="stat">Slash: <span id="aslash">0</span></div>
+                    <div class="stat">Crush: <span id="acrush">0</span></div>
+                    <div class="stat">Magic: <span id="amagic">0</span></div>
+                    <div class="stat">Range: <span id="arange">0</span></div>
+                    <div class="stat-category">Defence Bonus</div>
+                    <div class="stat">Stab: <span id="dstab">0</span></div>
+                    <div class="stat">Slash: <span id="dslash">0</span></div>
+                    <div class="stat">Crush: <span id="dcrush">0</span></div>
+                    <div class="stat">Magic: <span id="dmagic">0</span></div>
+                    <div class="stat">Range: <span id="drange">0</span></div>
+                    <div class="stat-category">Other Bonuses</div>
+                    <div class="stat">Melee Str: <span id="str">0</span></div>
+                    <div class="stat">Ranged Str: <span id="rstr">0</span></div>
+                    <div class="stat">Magic Dmg: <span id="mdmg">0%</span></div>
+                    <div class="stat">Prayer: <span id="prayer">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="total-stats">
+            <h3>Total Stats</h3>
+            <div class="stats-grid">
+                <div class="stat-category">Total Attack Bonus</div>
+                <div class="stat">Stab: <span id="total-astab">0</span></div>
+                <div class="stat">Slash: <span id="total-aslash">0</span></div>
+                <div class="stat">Crush: <span id="total-acrush">0</span></div>
+                <div class="stat">Magic: <span id="total-amagic">0</span></div>
+                <div class="stat">Range: <span id="total-arange">0</span></div>
+                <div class="stat-category">Total Defence Bonus</div>
+                <div class="stat">Stab: <span id="total-dstab">0</span></div>
+                <div class="stat">Slash: <span id="total-dslash">0</span></div>
+                <div class="stat">Crush: <span id="total-dcrush">0</span></div>
+                <div class="stat">Magic: <span id="total-dmagic">0</span></div>
+                <div class="stat">Range: <span id="total-drange">0</span></div>
+                <div class="stat-category">Total Other Bonuses</div>
+                <div class="stat">Melee Str: <span id="total-str">0</span></div>
+                <div class="stat">Ranged Str: <span id="total-rstr">0</span></div>
+                <div class="stat">Magic Dmg: <span id="total-mdmg">0%</span></div>
+                <div class="stat">Prayer: <span id="total-prayer">0</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
