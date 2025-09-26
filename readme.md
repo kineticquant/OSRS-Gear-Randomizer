@@ -30,6 +30,11 @@ https://raw.githubusercontent.com/kineticquant/OSRS-Gear-Randomizer/main/databas
 | Redirect database in source to current repo                     | COMPLETED ✅          
 | Mobile Responsiveness                     | In Progress       
 | Host the items list JSON as an available REST API                     | In Progress     
+| Optional spec weapons category                     | In Progress     
+| Magic spells category                     | In Progress     
+| Handling two-handed weapons with notice of losing shield                     | In Progress     
+
+
 
 ### How it works:
 Simply set the defined number of total rolls allowed, then start clicking each individual slot to roll a random item in that slot. Get all current item stats, the most recent roll's stats, or hover over an item to see its specific stats.
