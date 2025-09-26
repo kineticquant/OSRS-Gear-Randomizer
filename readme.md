@@ -1,6 +1,4 @@
-# Project Structure
-### aBOUT
-
+# About Project
 
 Built in:
 [![Python IDLE](https://img.shields.io/badge/Python%20IDLE-3776AB?logo=python&logoColor=fff)](#)
@@ -9,13 +7,13 @@ Built in:
 	[![CSS](https://img.shields.io/badge/CSS-639?logo=css&logoColor=fff)](#)
 
 
-# Utils
+### Utils
 - items-db script
 - fetch_delta_singular script
 OSRSBox
 
 
-# To Do:
+### To Do:
 | Task                                           | Status                          | Notes                          |
 |------------------------------------------------|---------------------------------|---------------------------------|
 | Create utils to establish a newly-updated Items list database                     | COMPLETED ✅          
