@@ -30,5 +30,4 @@ https://raw.githubusercontent.com/kineticquant/OSRS-Gear-Randomizer/main/databas
 
 ### How it works:
 Simply set the defined number of total rolls allowed, then start clicking each individual slot to roll a random item in that slot. Get all current item stats, the most recent roll's stats, or hover over an item to see its specific stats.
-<img width="600" height="550" alt="image" src="https://github.com/user-attachments/assets/5d4a4511-ce0f-4eeb-84d1-83163539cd2c" />
-<img width="600" height="550" alt="image" src="https://github.com/user-attachments/assets/4b9c1fe6-0cb7-4547-b711-5ec0caaaecc2" />
+<img width="600" height="550" alt="image" src="https://github.com/user-attachments/assets/5d4a4511-ce0f-4eeb-84d1-83163539cd2c" /><img width="600" height="550" alt="image" src="https://github.com/user-attachments/assets/4b9c1fe6-0cb7-4547-b711-5ec0caaaecc2" />
