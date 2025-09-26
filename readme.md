@@ -4,6 +4,7 @@ This is just a fun web app which generates random builds by rolls/slots. It was 
 In developing this, I found the OSRSBox API has been offline for quite some time, likely abandoned. As such, the items list is outdated by a few years, so I've created utilities to cross-compare off their items list to get all missing items into new finalized lists (see Utils section).
 
 Built in:
+
 [![Python IDLE](https://img.shields.io/badge/Python%20IDLE-3776AB?logo=python&logoColor=fff)](#)
 [![HTML](https://img.shields.io/badge/HTML-%23E34F26.svg?logo=html5&logoColor=white)](#)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000)](#)
@@ -26,3 +27,10 @@ https://raw.githubusercontent.com/kineticquant/OSRS-Gear-Randomizer/main/databas
 | Redirect database in source to current repo                     | COMPLETED ✅          
 | Mobile Responsiveness                     | In Progress       
 | Host the items list JSON as an available REST API                     | In Progress     
+
+### How it works:
+Simply set the defined number of total rolls allowed, then start clicking each individual slot to roll a random item in that slot. Get all current item stats, the most recent roll's stats, or hover over an item to see its specific stats.
+<img width="1270" height="1128" alt="image" src="https://github.com/user-attachments/assets/5d4a4511-ce0f-4eeb-84d1-83163539cd2c" />
+
+
+<img width="1244" height="1142" alt="image" src="https://github.com/user-attachments/assets/4b9c1fe6-0cb7-4547-b711-5ec0caaaecc2" />
