@@ -91,26 +91,70 @@ def _to_float(value, default=0.0):
     except (ValueError, TypeError):
         return default
 
+def _parse_equipment_and_weapon(wikitext):
+    equipment = {}
+    weapon = {}
+    
+    match = re.search(r'\{\{Infobox Bonuses\s*\|([\s\S]+?)\}\}', wikitext, re.IGNORECASE)
+    if not match:
+        return equipment, weapon
+
+    content = match.group(1)
+    bonus_data = {}
+    lines = content.split('\n|')
+    for line in lines:
+        if '=' not in line:
+            continue
+        key, value = line.split('=', 1)
+        bonus_data[key.strip().lower()] = value.strip()
+
+    stat_map = {
+        'astab': 'attack_stab', 'aslash': 'attack_slash', 'acrush': 'attack_crush',
+        'amagic': 'attack_magic', 'arange': 'attack_ranged', 'dstab': 'defence_stab',
+        'dslash': 'defence_slash', 'dcrush': 'defence_crush', 'dmagic': 'defence_magic',
+        'drange': 'defence_ranged', 'str': 'melee_strength', 'rstr': 'ranged_strength',
+        'mdmg': 'magic_damage', 'prayer': 'prayer'
+    }
+    for wiki_key, osrsbox_key in stat_map.items():
+        equipment[osrsbox_key] = _to_int(bonus_data.get(wiki_key, 0))
+
+    equipment['slot'] = bonus_data.get('slot', 'not equipable').lower()
+    
+    weapon['attack_speed'] = _to_int(bonus_data.get('aspeed', 0))
+    weapon['weapon_type'] = bonus_data.get('wtype', 'unarmed').lower()
+    
+    # Placeholder for stances as they are more complex to parse
+    weapon['stances'] = [] 
+    
+    return equipment, weapon
+
 def parse_infobox(wikitext, item_name, last_updated_iso):
     match = re.search(r'\{\{Infobox Item\s*\|([\s\S]+?)\}\}', wikitext, re.IGNORECASE)
     if not match: return None
+    
     content = match.group(1)
     item_data = {}
-    params = re.findall(r'\|\s*([^=]+?)\s*=\s*((?:.|\n)*?)(?=\n\s*\||\n\}\})', content)
 
-    for key, value in params:
+    lines = content.split('\n|')
+    for line in lines:
+        if '=' not in line:
+            continue
+        key, value = line.split('=', 1)
         key = key.strip().lower()
         value = value.strip()
         value = re.sub(r'\[\[(?:[^|]+\|)?([^\]]+)\]\]', r'\1', value)
         value = re.sub(r'<[^>]+>', '', value)
-        value = re.sub(r'\{\{[^}]+\}\}', '', value)
+        value = re.sub(r'\{\{[^}]*?\}\}', '', value)
+        value = value.strip()
         item_data[key] = value
 
     try:
-        item_id = int(item_data.get('id', '0'))
+        item_id = _to_int(item_data.get('id', '0'))
         if item_id == 0: return None
-    except ValueError:
+    except (ValueError, TypeError):
         return None
+
+    equipment, weapon = _parse_equipment_and_weapon(wikitext)
 
     # preserve original 'equipment' or 'weapon' in merge, not needed here
     return {
@@ -134,7 +178,9 @@ def parse_infobox(wikitext, item_name, last_updated_iso):
         'release_date': item_data.get('release', None),
         'examine': item_data.get('examine', ''),
         'wiki_name': item_name.replace(' ', '_'),
-        'wiki_url': f"https://oldschool.runescape.wiki/w/{item_name.replace(' ', '_')}"
+        'wiki_url': f"https://oldschool.runescape.wiki/w/{item_name.replace(' ', '_')}",
+        'equipment': equipment,
+        'weapon': weapon
     }
 
 # osrsbox db for starting point
@@ -151,21 +197,25 @@ def main():
     base_data = get_base_json(api_url)
     if base_data is None: return
 
-    name_to_id_map = {item['name']: item_id for item_id, item in base_data.items()}
-    existing_item_names = set(name_to_id_map.keys())
+    existing_item_names = {item['name'] for item_id, item in base_data.items()}
     print(f"Loaded {len(existing_item_names)} items from the base JSON.")
 
-    wiki_session = get_session()
-    wiki_titles = get_wiki_itm_tls(wiki_session)
+    session = get_session()
+    wiki_titles = get_wiki_itm_tls(session)
     if wiki_titles is None: return
 
-    new_item_titles = sorted([t for t in (wiki_titles - existing_item_names) if '/' not in t])
-    items_to_check = sorted([t for t in (wiki_titles & existing_item_names) if '/' not in t])
+    new_item_titles = {t for t in (wiki_titles - existing_item_names) if '/' not in t}
+    items_to_update = {t for t in (wiki_titles & existing_item_names) if '/' not in t}
     
-    print(f"\nFound {len(new_item_titles)} new items to add.")
-    print(f"Found {len(items_to_check)} existing items to check for updates.")
+    primary_new = sorted([t for t in new_item_titles if '(' not in t])
+    variant_new = sorted([t for t in new_item_titles if '(' in t])
     
-    all_titles_to_fetch = new_item_titles + items_to_check
+    all_titles_to_fetch = primary_new + sorted(list(items_to_update)) + variant_new
+
+    print(f"\nFound {len(new_item_titles)} new item titles to process for insertion.")
+    print(f"Found {len(items_to_update)} existing item titles to check for updates.")
+    print(f"Prioritizing {len(primary_new)} primary new items to prevent name conflicts.")
+    
     if not all_titles_to_fetch:
         print("No items to process. The database is up to date.")
         return
@@ -179,29 +229,42 @@ def main():
         batch_titles = all_titles_to_fetch[i:i + batch_size]
         print(f"Processing batch {i//batch_size + 1}/{(len(all_titles_to_fetch) + batch_size - 1)//batch_size}...", end='\r')
         
-        wiki_data_batch = batch_get_wiki_data(batch_titles, wiki_session)
+        wiki_data_batch = batch_get_wiki_data(batch_titles, session)
         
         for title, data in wiki_data_batch.items():
+            if 'unobtainable' in title.lower():
+                continue
+
             wiki_timestamp_iso = data['timestamp']
             wiki_timestamp_dt = datetime.fromisoformat(wiki_timestamp_iso).replace(tzinfo=timezone.utc)
             
-            
             parsed_item = parse_infobox(data['content'], title, wiki_timestamp_iso)
-            if not parsed_item: continue
+            if not parsed_item:
+                continue
 
             item_id_str = str(parsed_item['id'])
             
-            # logic to update an existing item or insert a new one based on ID
-            if item_id_str in base_data:
-                # e.g. this item exists so update it if the wiki data is newer
-                wiki_timestamp_dt = datetime.fromisoformat(data['timestamp']).replace(tzinfo=timezone.utc)
-                if wiki_timestamp_dt > osrsbox_cutoff:
-                    base_data[item_id_str].update(parsed_item)
-                    items_updated += 1
-            else:
-                # net-new item, since its ID is not in our DB so add it
-                base_data[item_id_str] = parsed_item
-                new_items_added += 1
+            if title in new_item_titles:
+                if item_id_str not in base_data:
+                    base_data[item_id_str] = parsed_item
+                    new_items_added += 1
+            elif title in items_to_update:
+                if item_id_str in base_data:
+                    original_name = base_data[item_id_str]['name']
+                    
+                    if not base_data[item_id_str].get('equipment'):
+                        base_data[item_id_str]['equipment'] = {}
+                    if not base_data[item_id_str].get('weapon'):
+                        base_data[item_id_str]['weapon'] = {}
+                    
+                    base_data[item_id_str]['equipment'].update(parsed_item['equipment'])
+                    base_data[item_id_str]['weapon'].update(parsed_item['weapon'])
+                    
+                    if wiki_timestamp_dt > osrsbox_cutoff:
+                        base_data[item_id_str].update(parsed_item)
+                        items_updated += 1
+
+                    base_data[item_id_str]['name'] = original_name
 
         time.sleep(0.1)
 
