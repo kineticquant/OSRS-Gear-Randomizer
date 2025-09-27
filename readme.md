@@ -16,23 +16,12 @@ Built in:
 Feel free to reference the full OSRS items list directly here:
 https://raw.githubusercontent.com/kineticquant/OSRS-Gear-Randomizer/main/database/items.json
 
+**See changelog.md for changes, bug fixes, and work in progress.**
 
 ### Utils
 - batch_merge script: Runs a batch process to get all items from the OSRS wiki and their metadata. Cross-compares the OSRSBox items JSON with the OSRS wiki, and does a full insert on any new items missing, and updates all existing items with the latest stats/metadata. Use this to build a full new list to start off of. 
 - incremental_create script: Runs a large cross-compare against the OSRSBox items JSON against the OSRS wiki, and then processes item by item to add any new items directly into a JSON. Use this for quick one-off's if you have a newly-updated list already.
 
-
-### To Do:
-| Task                                           | Status                          | Notes                          |
-|------------------------------------------------|---------------------------------|---------------------------------|
-| Create utils to establish a newly-updated Items list database                     | COMPLETED ✅          
-| Redirect database in source to current repo                     | COMPLETED ✅          
-| Mobile Responsiveness                     | In Progress       
-| Host the items list JSON as an available REST API                     | In Progress     
-| Optional spec weapons category                     | In Progress     
-| Magic spells category                     | In Progress     
-| Handling two-handed weapons with notice of losing shield                     | In Progress     | 2h category is now in the JSON - frontend work in progress
-| Fix merge script which is excluding new 2025 items for unknown reason | COMPLETED ✅
 
 
 ### How it works:
