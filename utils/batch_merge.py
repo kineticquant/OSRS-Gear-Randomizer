@@ -4,6 +4,7 @@ import re
 import time
 import os
 from datetime import datetime, timezone
+import base64
 
 # enter RSN name or email here if you want to be kind to the API maintainers
 contact_info = "email@na.com"
@@ -59,8 +60,8 @@ def get_wiki_itm_tls(session):
 def batch_get_wiki_data(page_titles, session):
     results = {}
     params = {
-        "action": "query", "prop": "revisions", "rvprop": "content|timestamp",
-        "format": "json", "titles": "|".join(page_titles)
+        "action": "query", "prop": "revisions|pageimages", "rvprop": "content|timestamp",
+        "format": "json", "titles": "|".join(page_titles), "pithumbsize": 50
     }
     try:
         response = session.get("https://oldschool.runescape.wiki/api.php", params=params)
@@ -68,16 +69,27 @@ def batch_get_wiki_data(page_titles, session):
         pages = response.json().get("query", {}).get("pages", {})
         for _, page_data in pages.items():
             title = page_data.get("title")
+            icon_url = page_data.get("thumbnail", {}).get("source")
             if title and "revisions" in page_data and page_data["revisions"]:
                 revision = page_data["revisions"][0]
                 content = revision.get("*")
                 timestamp = revision.get("timestamp")
                 if content and timestamp:
-                    results[title] = {"content": content, "timestamp": timestamp}
+                    results[title] = {"content": content, "timestamp": timestamp, "icon_url": icon_url}
         return results
     except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
         print(f"Could not fetch a batch of wikitext: {e}")
         return {}
+
+def _get_icon_b64(url, session):
+    if not url:
+        return None
+    try:
+        response = session.get(url)
+        response.raise_for_status()
+        return base64.b64encode(response.content).decode('utf-8')
+    except requests.exceptions.RequestException:
+        return None
 
 def _to_int(value, default=0):
     try:
@@ -123,12 +135,11 @@ def _parse_equipment_and_weapon(wikitext):
     weapon['attack_speed'] = _to_int(bonus_data.get('aspeed', 0))
     weapon['weapon_type'] = bonus_data.get('wtype', 'unarmed').lower()
     
-    # Placeholder for stances as they are more complex to parse
     weapon['stances'] = [] 
     
     return equipment, weapon
 
-def parse_infobox(wikitext, item_name, last_updated_iso):
+def parse_infobox(wikitext, item_name, last_updated_iso, icon_b64):
     match = re.search(r'\{\{Infobox Item\s*\|([\s\S]+?)\}\}', wikitext, re.IGNORECASE)
     if not match: return None
     
@@ -156,7 +167,6 @@ def parse_infobox(wikitext, item_name, last_updated_iso):
 
     equipment, weapon = _parse_equipment_and_weapon(wikitext)
 
-    # preserve original 'equipment' or 'weapon' in merge, not needed here
     return {
         'id': item_id, 'name': item_name, 'last_updated': last_updated_iso,
         'incomplete': False, 'members': item_data.get('members', 'no').lower() == 'yes',
@@ -177,13 +187,13 @@ def parse_infobox(wikitext, item_name, last_updated_iso):
         'quest_item': item_data.get('quest', 'no').lower() == 'yes',
         'release_date': item_data.get('release', None),
         'examine': item_data.get('examine', ''),
+        'icon': icon_b64,
         'wiki_name': item_name.replace(' ', '_'),
         'wiki_url': f"https://oldschool.runescape.wiki/w/{item_name.replace(' ', '_')}",
         'equipment': equipment,
         'weapon': weapon
     }
 
-# osrsbox db for starting point
 def main():
     api_url = 'https://raw.githubusercontent.com/osrsbox/osrsbox-db/master/docs/items-complete.json'
     
@@ -191,7 +201,6 @@ def main():
     output_filename = os.path.join(output_dir, "items.json")
     os.makedirs(output_dir, exist_ok=True)
     
-    # cut off time for any new updates to items in osrs where we can merge
     osrsbox_cutoff = datetime.fromisoformat("2021-09-30T00:00:00").replace(tzinfo=timezone.utc)
 
     base_data = get_base_json(api_url)
@@ -238,7 +247,8 @@ def main():
             wiki_timestamp_iso = data['timestamp']
             wiki_timestamp_dt = datetime.fromisoformat(wiki_timestamp_iso).replace(tzinfo=timezone.utc)
             
-            parsed_item = parse_infobox(data['content'], title, wiki_timestamp_iso)
+            icon_b64 = _get_icon_b64(data.get('icon_url'), session)
+            parsed_item = parse_infobox(data['content'], title, wiki_timestamp_iso, icon_b64)
             if not parsed_item:
                 continue
 
@@ -259,6 +269,8 @@ def main():
                     
                     base_data[item_id_str]['equipment'].update(parsed_item['equipment'])
                     base_data[item_id_str]['weapon'].update(parsed_item['weapon'])
+                    if parsed_item.get('icon'):
+                        base_data[item_id_str]['icon'] = parsed_item['icon']
                     
                     if wiki_timestamp_dt > osrsbox_cutoff:
                         base_data[item_id_str].update(parsed_item)
