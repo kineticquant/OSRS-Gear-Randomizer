@@ -19,8 +19,8 @@ https://raw.githubusercontent.com/kineticquant/OSRS-Gear-Randomizer/main/databas
 
 
 ### Utils
-- items-db script: Runs a batch process to get all items from the OSRS wiki and their metadata. Cross-compares the OSRSBox items JSON with the OSRS wiki, and does a full insert on any new items missing, and updates all existing items with the latest stats/metadata. Use this to build a full new list to start off of. 
-- fetch_delta_singular script: Runs a large cross-compare against the OSRSBox items JSON against the OSRS wiki, and then processes item by item to add any new items directly into a JSON. Use this for quick one-off's if you have a newly-updated list already.
+- batch_update script: Runs a batch process to get all items from the OSRS wiki and their metadata. Cross-compares the OSRSBox items JSON with the OSRS wiki, and does a full insert on any new items missing, and updates all existing items with the latest stats/metadata. Use this to build a full new list to start off of. 
+- incremental_create script: Runs a large cross-compare against the OSRSBox items JSON against the OSRS wiki, and then processes item by item to add any new items directly into a JSON. Use this for quick one-off's if you have a newly-updated list already.
 
 
 ### To Do:

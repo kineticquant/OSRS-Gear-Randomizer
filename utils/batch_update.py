@@ -185,22 +185,23 @@ def main():
             wiki_timestamp_iso = data['timestamp']
             wiki_timestamp_dt = datetime.fromisoformat(wiki_timestamp_iso).replace(tzinfo=timezone.utc)
             
+            
             parsed_item = parse_infobox(data['content'], title, wiki_timestamp_iso)
             if not parsed_item: continue
 
             item_id_str = str(parsed_item['id'])
             
-            if title in new_item_titles:
-                if item_id_str not in base_data:
-                    base_data[item_id_str] = parsed_item
-                    new_items_added += 1
-            elif title in items_to_check and wiki_timestamp_dt > osrsbox_cutoff:
-                if item_id_str in base_data:
+            # logic to update an existing item or insert a new one based on ID
+            if item_id_str in base_data:
+                # e.g. this item exists so update it if the wiki data is newer
+                wiki_timestamp_dt = datetime.fromisoformat(data['timestamp']).replace(tzinfo=timezone.utc)
+                if wiki_timestamp_dt > osrsbox_cutoff:
                     base_data[item_id_str].update(parsed_item)
                     items_updated += 1
-                else: # This can happen if an item was renamed on the wiki
-                    base_data[item_id_str] = parsed_item
-                    new_items_added += 1
+            else:
+                # net-new item, since its ID is not in our DB so add it
+                base_data[item_id_str] = parsed_item
+                new_items_added += 1
 
         time.sleep(0.1)
 
