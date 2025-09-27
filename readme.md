@@ -32,7 +32,7 @@ https://raw.githubusercontent.com/kineticquant/OSRS-Gear-Randomizer/main/databas
 | Optional spec weapons category                     | In Progress     
 | Magic spells category                     | In Progress     
 | Handling two-handed weapons with notice of losing shield                     | In Progress     | 2h category is now in the JSON - frontend work in progress
-| Fix merge script which is excluding new 2025 items for unknown reason | In Progress
+| Fix merge script which is excluding new 2025 items for unknown reason | COMPLETED ✅
 
 
 ### How it works:
