@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'https://raw.githubusercontent.com/kineticquant/OSRS-Gear-Randomizer/refs/heads/main/database/items.json';
+    const API_URL = 'https://raw.githubusercontent.com/kineticquant/OSRS-Gear-Randomizer/main/database/items.json';
     const categorizedItems = {};
     const rollCounters = {};
     const equippedItems = {};
