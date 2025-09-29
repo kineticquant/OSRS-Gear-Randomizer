@@ -7,8 +7,8 @@
 | Host the items list JSON as an available REST API                     | In Progress     
 | Optional spec weapons category                     | In Progress     
 | Magic spells category                     | In Progress     
-| Filter out variants (last man standing, unobtainable torva, etc)                     | In Progress     
-| Handling two-handed weapons with notice of losing shield                     | In Progress     | 2h category is now in the JSON - frontend work in progress
+| Filter out variants (last man standing, unobtainable torva, etc) / Runtime exclusion list                    | In Progress     
+| Handling two-handed weapons with notice of losing shield                     | COMPLETED ✅     | 2h category is now in the JSON - frontend work completed with new warning icon
 | Fix merge script which is excluding new 2025 items for unknown reason | COMPLETED ✅
 | Make leagues items optional (e.g. Amulet of the Monarch, Banker's briefcase)                     | Not Started     
 | 2h items not rolling for unnown reason                     | Bug Fixed ✅     
