@@ -13,3 +13,4 @@
 | Make leagues items optional (e.g. Amulet of the Monarch, Banker's briefcase)                     | Not Started     
 | 2h items not rolling for unnown reason                     | Not Started     
 | Include variants of all items                    | Not Started     
+| Individual database pipeline util for filtering out specific items at runtime                     | Not Started     
