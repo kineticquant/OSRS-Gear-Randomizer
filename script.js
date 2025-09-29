@@ -36,8 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (item.equipable_by_player && item.equipment) {
                     const slot = item.equipment.slot;
                     if (slot && slot !== 'null') {
-                        if (!categorizedItems[slot]) categorizedItems[slot] = [];
-                        categorizedItems[slot].push(item);
+                        if (slot === '2h') {
+                            if (!categorizedItems['weapon']) categorizedItems['weapon'] = [];
+                            categorizedItems['weapon'].push(item);
+                        } else {
+                            if (!categorizedItems[slot]) categorizedItems[slot] = [];
+                            categorizedItems[slot].push(item);
+                        }
                     }
                 }
             }
@@ -92,6 +97,21 @@ document.addEventListener('DOMContentLoaded', () => {
             equippedItems[slotName] = selectedItem;
             updateDisplay(selectedItem, slotName);
             
+            if (slotName === 'weapon') {
+                const shieldSlot = document.getElementById('shield');
+                const existingWarning = shieldSlot.querySelector('.warning-indicator');
+                if (existingWarning) {
+                    existingWarning.remove();
+                }
+
+                if (selectedItem.equipment.slot === '2h') {
+                    const warningIndicator = document.createElement('span');
+                    warningIndicator.className = 'warning-indicator';
+                    warningIndicator.textContent = '!';
+                    shieldSlot.prepend(warningIndicator);
+                }
+            }
+
             rollCounters[slotName]++;
             document.getElementById(`${slotName}-counter`).textContent = rollCounters[slotName];
 
@@ -161,7 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalStats = {};
         statKeys.forEach(key => totalStats[key] = 0);
 
+        const isTwoHandedEquipped = equippedItems['weapon'] && equippedItems['weapon'].equipment.slot === '2h';
+
         for (const slot in equippedItems) {
+            if (isTwoHandedEquipped && slot === 'shield') {
+                continue;
+            }
             const item = equippedItems[slot];
             if (item?.equipment) {
                 statKeys.forEach(key => {
