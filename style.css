@@ -189,3 +189,14 @@ h1 {
 .tooltip-stat {
     margin: 4px 0;
 }
+
+/* 2h warning over shield catg */
+.warning-indicator {
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    font-size: 30px;
+    color: red;
+    font-weight: bold;
+    z-index: 10;
+}
