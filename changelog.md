@@ -14,3 +14,4 @@
 | 2h items not rolling for unnown reason                     | Bug Fixed ✅     
 | Include variants of all items                    | In Progress     
 | Individual database pipeline util for filtering out specific items at runtime                     | Not Started     
+| Pure builds with various attack, strength, and defence filters | Not Started
